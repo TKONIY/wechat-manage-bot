@@ -1,0 +1,17 @@
+{
+  "name": "webot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "tkoniy",
+  "license": "ISC",
+  "dependencies": {
+    "mongodb": "^3.5.3",
+    "qrcode-terminal": "^0.12.0",
+    "wechaty": "^0.30.23",
+    "wechaty-puppet-puppeteer": "^0.18.3"
+  }
+}
