@@ -4,7 +4,7 @@
 | ---------- | ---------- |
 | wechat     | db         |
 | clockInMsg | collection |
-| users      | collection |
+| user       | collection |
 ## document
 * clockInMsg: 
 ```json

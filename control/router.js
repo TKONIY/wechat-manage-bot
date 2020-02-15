@@ -36,15 +36,35 @@ exports.clockInMsg = (msg) => {
         }
 
         console.log(doc);
-
-        db.insertOne(config.db,//插入数据库
+        //如果今天已经打卡，那就这次的就不算。
+        db.find(
+            config.db,
             config.colls.msg,
-            doc, (err, result) => {
-                if (err) console.log(err);
-                else console.log(name + " 已打卡, 日期为 " + date);
+            { "date": date, "index": index },
+            {}, (docs) => {
+                if (docs.length == 0) {//如果今天还没打
+                    db.insertOne(
+                        config.db,//插入数据库
+                        config.colls.msg,
+                        doc, (err, result) => {
+                            if (err) console.log(err);
+                            else console.log(index + " 已打卡, 日期为 " + date);
+                        }
+                    )
+                    //临时函数！修改名单为微信用户名，差不多都修改完了就可以注释掉这里了>>>>>>>>>>>>>>>>>>
+                    db.update(
+                        config.db,
+                        config.colls.user,
+                        { "index": index },
+                        { $set: { "name": name } },
+                        {}, (result) => {
+                            console.log("user已更正" + name + "的用户名。");
+                        }
+                    )
+                    ///<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< 
+                }
             }
         )
-
     }
     //接受来源
     //提取编号

@@ -3,6 +3,6 @@ module.exports = {
     db: "wechat",
     colls: {
         msg: "clockInMsg",
-        user: "users"
+        user: "user"
     }
 }
