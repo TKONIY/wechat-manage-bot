@@ -4,20 +4,22 @@ const config = require("../control/config.js")
 //已经测试，需要定时启动
 //每日定点或手动检查数据库
 //输入日期，更新，然后回调函数后续处理：比如提醒/踢人,callback没有参数
-function dailyCheck(dateStr, callback) {
+function lazyCount(dateStr, callback) {
     db.find(
         config.db,
         config.colls.msg,
         { date: dateStr },//查找当前日期的记录
         {}, (docs) => {
             //寻找所有当前日期的msg，将用户编号存入数组
+            docsToArr(docs, "index", (clockInArr) => {
+                console.log("今天已打卡共" + clockInArr.length + "人: " + clockInArr.sort());
+            })//打印打卡的人的编号
             updateUser(0, docs, callback);//将所有该日期未打卡用户的lazyday+1
-            console.log(docs);
         }
     )
 }
 
-//dailyCheck中的递归函数
+//lazyCount中的递归函数
 function updateUser(i, docs, callback) {
     {  //递归
         if (i >= docs.length) {
@@ -29,7 +31,7 @@ function updateUser(i, docs, callback) {
                 { $inc: { lazyday: 1 } },//所有lazyday+1
                 { multi: true },
                 (result) => {
-                    console.log("lazydays更新完成:" + result.result);
+                    console.log("lazydays更新完成:" + JSON.stringify(result.result));
                     callback();
                     return;
                 }
@@ -50,7 +52,7 @@ function updateUser(i, docs, callback) {
     }
 }
 //1. 找到两天没打卡的人进行,返回docs
-//2. 将所有status:200，lazyday:3的人status设置为404，在dailyCheck的callback中调用
+//2. 将所有status:200，lazyday:3的人status设置为404，在lazycount的callback中调用
 //callback回调函数参数为lazy2docs和lazy3docs，前者提醒后者踢出。
 function setStatus(callback) {
     db.find(//找到两天没打卡的人进行提醒
@@ -90,21 +92,44 @@ function setStatus(callback) {
         }
     )
 
-}//未测试
+}
 
-//将lazy?docs数组中的编号提取出来转换为数组的函数
+//将记录数组中的某个key的value提取出来转换为数组的函数,回调参数为array
+//参数为docs，query:"index" or "name"，字符串
+function docsToArr(docs, query, callback) {
+    var array = [];
+    (function iter(i) {
+        if (i >= docs.length) {//递归结束
+            callback(array);
+            return;
+        } else {                //递归
+            array.push(docs[i][query])//直接根据键值查找
+            iter(i + 1);//遍历下一个
+        }
+    })(0)
+}
+
+
+//将记录数组中的名字提取出来转换为数组的函数
 
 //暴露接口
-exports.dailyCheck = dailyCheck;
+exports.lazyCount = lazyCount;
 exports.setStatus = setStatus;
-// dailyCheck("2020-2-16", () => {
-//     return;
-// })
+exports.docsToArr = docsToArr;
 
-dailyCheck("2020-2-16", () => {
-    setStatus((lazy2docs, lazy3docs) => {
-        //这里可以进行提取编号后输出
-        console.log("2天没打卡:" + lazy2docs.length);
-        console.log("3天没打卡:" + lazy3docs.length);
+const date = (new Date()).toLocaleDateString();
+
+
+console.log(date);
+
+//※※主程序※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※
+lazyCount(date, () => {                                 //更新lazyday
+    setStatus((lazy2docs, lazy3docs) => {               //更新status         
+        docsToArr(lazy2docs, "index", (lazy2arr) => {   //提取要提醒和要踢出的index名单
+            docsToArr(lazy3docs, "index", (lazy3arr) => {
+                console.log("2天没打卡共" + lazy2arr.length + "人: " + lazy2arr.sort());
+                console.log("3天没打卡共" + lazy3arr.length + "人: " + lazy3arr.sort());
+            })
+        })
     })
 })

@@ -15,7 +15,7 @@ function resetUser(callback) {
         },
         { multi: true },
         (result) => {
-            console.log("resetUser result" + result.result);
+            console.log("resetUser => result: " + JSON.stringify(result.result));
             callback();
         }
     )
