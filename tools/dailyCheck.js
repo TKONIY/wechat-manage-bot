@@ -28,8 +28,8 @@ function updateUser(i, docs, callback) {
                 { status: 200 },//仅对打卡状态的用户进行操作
                 { $inc: { lazyday: 1 } },//所有lazyday+1
                 { multi: true },
-                (reqsult) => {
-                    console.log("lazydays更新完成");
+                (result) => {
+                    console.log("lazydays更新完成:" + result.result);
                     callback();
                     return;
                 }
@@ -42,32 +42,57 @@ function updateUser(i, docs, callback) {
                 { $inc: { lazyday: -1 } },//打卡的lazyday-1
                 { multi: false },
                 (result) => {
-                    console.log(i);
+                    console.log(i + "# 打卡状态已登记");
                     updateUser(i + 1, docs, callback);
                 }
             )
         }
     }
 }
-
-//将所有status:200，lazyday:3的人status设置为404，在dailyCheck的callback中调用
-//callback回调函数没有参数，里面可以调用踢出群聊函数，router里面写吧
+//1. 找到两天没打卡的人进行,返回docs
+//2. 将所有status:200，lazyday:3的人status设置为404，在dailyCheck的callback中调用
+//callback回调函数参数为lazy2docs和lazy3docs，前者提醒后者踢出。
 function setStatus(callback) {
-    db.update(
+    db.find(//找到两天没打卡的人进行提醒
         config.db,
         config.colls.user,
         {
             "status": 200,
-            "lazyday": 3
-        },
-        { $set: { "status": 404 } },
-        { multi: true },
-        (result) => {
-            console.log("已经将3天不打卡的人404")
-            callback()
+            "lazyday": 2
+        }, {},
+        (lazy2docs) => {
+            //callback(lazy2docs);
+            //下一步，找到三天没打卡的人，将他们404并返回lazy3docs，直接踢出群
+            db.find(
+                config.db,
+                config.colls.user,
+                {
+                    "status": 200,
+                    "lazyday": 3
+                }, {},
+                (lazy3docs) => {//下一步将这些人全部404
+                    db.update(
+                        config.db,
+                        config.colls.user,
+                        {
+                            "status": 200,
+                            "lazyday": 3
+                        },
+                        { $set: { "status": 404 } },
+                        { multi: true },
+                        (result) => {
+                            console.log("已经将3天不打卡的人404")
+                            callback(lazy2docs, lazy3docs);
+                        }
+                    )
+                }
+            )
         }
     )
+
 }//未测试
+
+//将lazy?docs数组中的编号提取出来转换为数组的函数
 
 //暴露接口
 exports.dailyCheck = dailyCheck;
@@ -75,3 +100,11 @@ exports.setStatus = setStatus;
 // dailyCheck("2020-2-16", () => {
 //     return;
 // })
+
+dailyCheck("2020-2-16", () => {
+    setStatus((lazy2docs, lazy3docs) => {
+        //这里可以进行提取编号后输出
+        console.log("2天没打卡:" + lazy2docs.length);
+        console.log("3天没打卡:" + lazy3docs.length);
+    })
+})
