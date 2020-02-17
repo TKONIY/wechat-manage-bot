@@ -18,8 +18,10 @@ exports.showQrCode = (qrcode, status) => {
 exports.clockInMsg = (msg) => {
     //接受信息
     var text = msg.text().replace(/\s*/g, "");//去掉全部空格
-    const reg = /^(\d+)#([\s\S]*)$/;//设置正则表达式，+表示至少一个，*表示至少0次
-    text = reg.exec(text);//提取关键值
+    //设置正则表达式，+表示至少一个，*表示至少0次
+    const regEn = /^(\d+)#([\s\S]*)$/;//中文符号＃
+    const regCn = /^(\d+)＃([\s\S]*)$/;//英文符号#
+    text = regEn.exec(text) || regCn.exec(text);//提取关键值
 
     if (text) {//如果匹配
 
