@@ -4,5 +4,6 @@ module.exports = {
     colls: {
         msg: "clockInMsg",
         user: "user"
-    }
+    },
+    toolId: "filehelper"
 }

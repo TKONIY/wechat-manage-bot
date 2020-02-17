@@ -6,12 +6,12 @@ const db = require("../model/db.js");
 exports.showQrCode = (qrcode, status) => {
     if (status == 0) {
         qrt.generate(qrcode, { small: true });
-    }
+    };
     const qrcodeImageUrl = [
         'https://api.qrserver.com/v1/create-qr-code/?data=',
         encodeURIComponent(qrcode)
-    ].join('')
-    console.log(qrcodeImageUrl)
+    ].join('');
+    console.log(qrcodeImageUrl);
 }
 
 //接受指定群聊的群聊信息（现在是打卡群
@@ -73,4 +73,3 @@ exports.clockInMsg = (msg) => {
     //判断该信息源是否和之前某一个来源拥有了同样的编号，如果是，那么回复：@id1 你的编号和 @id2 的冲突。
     //没有问题则存入数据库
 }
-

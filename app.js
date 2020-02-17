@@ -2,23 +2,19 @@
 const { Wechaty } = require("wechaty");
 const qrt = require("qrcode-terminal");
 const router = require("./control/router.js");
-const config = require("./control/config.js")
+const config = require("./control/config.js");
+const clock = require("./tools/clock.js");
 
 //设置一个bot
 const bot = new Wechaty();
-
-
 //扫描二维码
 bot.on('scan', router.showQrCode)
-
 //登录
 bot.on('login', user => {
     console.log(`${user}登录成功❤`);
 })
-
 //接受信息
 bot.on('message', (msg) => {
-
     //监视打卡群的消息
     if (msg.room()) {
         msg.room().topic().then((topic) => {
@@ -29,6 +25,20 @@ bot.on('message', (msg) => {
 })
 //启动
 bot.start()
+
+
+//定时任务,保持登录
+clock.clockFunction("*/1 * * * *", () => {
+    const contact = bot.Contact.load(config.toolId);//找到文件传输助手
+    if (contact) {
+        const timeMsg = (new Date).toLocaleString();//定义时间
+        contact //发送时间
+            .say(timeMsg)
+            .then(() => {
+                console.log(timeMsg);
+            });
+    }
+})
 
 
 
