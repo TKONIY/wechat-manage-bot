@@ -2,3 +2,6 @@
 /node_modules
 /mongo
 /*node_modules.tar.gz
+/.idea
+*memory-card* 
+userIndex

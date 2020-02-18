@@ -10,7 +10,7 @@ const schedule = require("node-schedule");
  */
 function clockFunction(frequency, callback){
     schedule.scheduleJob(frequency,(fireDate)=>{
-        console.log(fireDate.toLocaleString());
+        // console.log(fireDate.toLocaleString());
         callback();
     })
 }

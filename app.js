@@ -6,7 +6,7 @@ const config = require("./control/config.js");
 const clock = require("./tools/clock.js");
 
 //设置一个bot
-const bot = new Wechaty();
+const bot = new Wechaty({profile:"test"});
 //扫描二维码
 bot.on('scan', router.showQrCode)
 //登录
@@ -39,6 +39,7 @@ clock.clockFunction("*/1 * * * *", () => {
             });
     }
 })
+
 
 
 
