@@ -4,9 +4,10 @@ const qrt = require("qrcode-terminal");
 const router = require("./control/router.js");
 const config = require("./control/config.js");
 const clock = require("./tools/clock.js");
+const dailyCheck = require("./tools/dailyCheck.js");
 
 //设置一个bot
-const bot = new Wechaty({profile:"test"});
+const bot = new Wechaty({ profile: "test" });
 //扫描二维码
 bot.on('scan', router.showQrCode)
 //登录
@@ -38,6 +39,12 @@ clock.clockFunction("*/1 * * * *", () => {
                 console.log(timeMsg);
             });
     }
+})
+
+//定时任务每天晚上23:58:30开始检查
+clock.clockFunction("30 58 23 * * *", () => {
+    const date = (new Date()).toLocaleDateString();
+    dailyCheck.dailyCheck(date)
 })
 
 

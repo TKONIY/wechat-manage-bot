@@ -22,3 +22,7 @@ exports.clockFunction = clockFunction;
 // clockFunction("*/1 * * * *",()=>{
 //     console.log((new Date).toLocaleString())
 // })
+
+// clockFunction("* 47 23 * * *", () => {
+//     console.log("ok");
+// })

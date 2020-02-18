@@ -117,19 +117,21 @@ exports.lazyCount = lazyCount;
 exports.setStatus = setStatus;
 exports.docsToArr = docsToArr;
 
-const date = (new Date()).toLocaleDateString();
+// const date = (new Date()).toLocaleDateString();
 
 
-console.log(date);
+// console.log(date);
 
 //※※主程序※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※
-lazyCount(date, () => {                                 //更新lazyday
-    setStatus((lazy2docs, lazy3docs) => {               //更新status         
-        docsToArr(lazy2docs, "index", (lazy2arr) => {   //提取要提醒和要踢出的index名单
-            docsToArr(lazy3docs, "index", (lazy3arr) => {
-                console.log("2天没打卡共" + lazy2arr.length + "人: " + lazy2arr.sort());
-                console.log("3天没打卡共" + lazy3arr.length + "人: " + lazy3arr.sort());
+exports.dailyCheck = (date)=>{
+    lazyCount(date, () => {                                 //更新lazyday
+        setStatus((lazy2docs, lazy3docs) => {               //更新status         
+            docsToArr(lazy2docs, "index", (lazy2arr) => {   //提取要提醒和要踢出的index名单
+                docsToArr(lazy3docs, "index", (lazy3arr) => {
+                    console.log("2天没打卡共" + lazy2arr.length + "人: " + lazy2arr.sort());
+                    console.log("3天没打卡共" + lazy3arr.length + "人: " + lazy3arr.sort());
+                })
             })
         })
     })
-})
+}
