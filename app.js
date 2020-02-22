@@ -44,7 +44,21 @@ clock.clockFunction("*/1 * * * *", () => {
 //定时任务每天晚上23:58:30开始检查
 clock.clockFunction("30 58 23 * * *", () => {
     const date = (new Date()).toLocaleDateString();
-    dailyCheck.dailyCheck(date)
+    dailyCheck.dailyCheck(date, (lazy2arr, lazy3arr) => {
+        //提醒lazy2arr的成员
+        bot.Room.find({ topic: config.clockInRoom }).then((room) => {
+            if (room) {
+                if (lazy2arr.length == 0) {
+                    room.say("今天没有要提醒的同学,大家继续加油!——没有名字的机器人管理员(测试阶段")
+                        .then(() => { console.log("不用提醒,已发送鼓励") })
+                } else {
+                    room.say("提醒 " + lazy2arr + " 号小伙伴沉浸学习之余别忘了打卡哦☺")
+                        .then(() => console.log("已经发送提醒"))
+                }
+            }
+        })
+        //踢出lazy3arr的成员
+    })
 })
 
 

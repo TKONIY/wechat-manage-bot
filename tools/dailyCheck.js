@@ -123,15 +123,19 @@ exports.docsToArr = docsToArr;
 // console.log(date);
 
 //※※主程序※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※
-exports.dailyCheck = (date)=>{
+function dailyCheck(date, callback) {
     lazyCount(date, () => {                                 //更新lazyday
         setStatus((lazy2docs, lazy3docs) => {               //更新status         
             docsToArr(lazy2docs, "index", (lazy2arr) => {   //提取要提醒和要踢出的index名单
                 docsToArr(lazy3docs, "index", (lazy3arr) => {
                     console.log("2天没打卡共" + lazy2arr.length + "人: " + lazy2arr.sort());
                     console.log("3天没打卡共" + lazy3arr.length + "人: " + lazy3arr.sort());
+                    callback(lazy2arr, lazy3arr)
                 })
             })
         })
     })
 }
+exports.dailyCheck = dailyCheck
+//该脚本提供的借口可单独手动调用
+dailyCheck((new Date()).toLocaleDateString())

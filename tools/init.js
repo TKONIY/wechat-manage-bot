@@ -24,5 +24,5 @@ function resetUser(callback) {
 //暴露
 exports.resetUser = resetUser;
 
-//调用
+//该脚本仅限于手动单独调用
 resetUser(() => { return });
