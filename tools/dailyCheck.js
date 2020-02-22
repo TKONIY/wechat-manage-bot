@@ -138,4 +138,4 @@ function dailyCheck(date, callback) {
 }
 exports.dailyCheck = dailyCheck
 //该脚本提供的借口可单独手动调用
-dailyCheck((new Date()).toLocaleDateString())
+// dailyCheck((new Date()).toLocaleDateString(), ()=>{})
